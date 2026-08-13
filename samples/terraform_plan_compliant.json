@@ -1,0 +1,154 @@
+{
+  "format_version": "1.1",
+  "terraform_version": "1.5.0",
+  "planned_values": {},
+  "resource_changes": [
+    {
+      "address": "azurerm_redis_cache.compliant_redis",
+      "mode": "managed",
+      "type": "azurerm_redis_cache",
+      "name": "compliant_redis",
+      "provider_name": "registry.terraform.io/hashicorp/azurerm",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "name": "compliant-redis-prod",
+          "location": "eastus",
+          "resource_group_name": "rg-banking-prod",
+          "capacity": 2,
+          "family": "P",
+          "sku_name": "Premium",
+          "enable_non_ssl_port": false,
+          "minimum_tls_version": "1.2",
+          "public_network_access_enabled": false,
+          "identity": [
+            {
+              "type": "SystemAssigned"
+            }
+          ],
+          "encryption": [
+            {
+              "key_vault_key_id": "https://kv-banking.vault.azure.net/keys/redis-cmk/abc123"
+            }
+          ],
+          "redis_configuration": {
+            "rdb_backup_enabled": "true",
+            "rdb_backup_frequency": "60",
+            "rdb_storage_connection_string": "DefaultEndpointsProtocol=https;AccountName=storageaccount;AccountKey=key==",
+            "aad_enabled": "true",
+            "enable_authentication": "false"
+          },
+          "tags": {
+            "CostCenter": "CC-12345",
+            "BusinessUnit": "Retail Banking",
+            "Environment": "Production",
+            "Owner": "platform-team@bank.com",
+            "Application": "Customer Portal",
+            "DataClassification": "Confidential"
+          }
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "azurerm_private_endpoint.redis_pe",
+      "mode": "managed",
+      "type": "azurerm_private_endpoint",
+      "name": "redis_pe",
+      "provider_name": "registry.terraform.io/hashicorp/azurerm",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "name": "pe-compliant-redis-prod",
+          "location": "eastus",
+          "resource_group_name": "rg-banking-prod",
+          "subnet_id": "/subscriptions/sub-id/resourceGroups/rg-banking-prod/providers/Microsoft.Network/virtualNetworks/vnet-banking/subnets/subnet-private-endpoints",
+          "private_service_connection": [
+            {
+              "name": "redis-privatelink",
+              "private_connection_resource_id": "/subscriptions/sub-id/resourceGroups/rg-banking-prod/providers/Microsoft.Cache/redis/compliant-redis-prod",
+              "is_manual_connection": false,
+              "subresource_names": ["redisCache"]
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "azurerm_management_lock.redis_lock",
+      "mode": "managed",
+      "type": "azurerm_management_lock",
+      "name": "redis_lock",
+      "provider_name": "registry.terraform.io/hashicorp/azurerm",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "name": "lock-compliant-redis-prod",
+          "scope": "/subscriptions/sub-id/resourceGroups/rg-banking-prod/providers/Microsoft.Cache/redis/compliant-redis-prod",
+          "lock_level": "CanNotDelete",
+          "notes": "Production Redis - deletion protection enabled"
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "azurerm_monitor_diagnostic_setting.redis_diagnostics",
+      "mode": "managed",
+      "type": "azurerm_monitor_diagnostic_setting",
+      "name": "redis_diagnostics",
+      "provider_name": "registry.terraform.io/hashicorp/azurerm",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "name": "diag-compliant-redis-prod",
+          "target_resource_id": "/subscriptions/sub-id/resourceGroups/rg-banking-prod/providers/Microsoft.Cache/redis/compliant-redis-prod",
+          "log_analytics_workspace_id": "/subscriptions/sub-id/resourceGroups/rg-monitoring/providers/Microsoft.OperationalInsights/workspaces/law-banking-prod",
+          "log": [
+            {
+              "category": "ConnectedClientList",
+              "enabled": true,
+              "retention_policy": {
+                "enabled": true,
+                "days": 90
+              }
+            }
+          ],
+          "metric": [
+            {
+              "category": "AllMetrics",
+              "enabled": true,
+              "retention_policy": {
+                "enabled": true,
+                "days": 90
+              }
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "azurerm_role_assignment.redis_reader",
+      "mode": "managed",
+      "type": "azurerm_role_assignment",
+      "name": "redis_reader",
+      "provider_name": "registry.terraform.io/hashicorp/azurerm",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "scope": "/subscriptions/sub-id/resourceGroups/rg-banking-prod/providers/Microsoft.Cache/redis/compliant-redis-prod",
+          "role_definition_name": "Redis Cache Contributor",
+          "principal_id": "managed-identity-id-123",
+          "principal_type": "ServicePrincipal"
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

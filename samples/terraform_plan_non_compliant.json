@@ -1,0 +1,52 @@
+{
+  "format_version": "1.1",
+  "terraform_version": "1.5.0",
+  "planned_values": {},
+  "resource_changes": [
+    {
+      "address": "azurerm_redis_cache.non_compliant_redis",
+      "mode": "managed",
+      "type": "azurerm_redis_cache",
+      "name": "non_compliant_redis",
+      "provider_name": "registry.terraform.io/hashicorp/azurerm",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "name": "non-compliant-redis-prod",
+          "location": "eastus",
+          "resource_group_name": "rg-banking-prod",
+          "capacity": 2,
+          "family": "C",
+          "sku_name": "Standard",
+          "enable_non_ssl_port": true,
+          "minimum_tls_version": "1.0",
+          "public_network_access_enabled": true,
+          "redis_configuration": {},
+          "tags": {
+            "Environment": "Production"
+          }
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "azurerm_role_assignment.redis_owner",
+      "mode": "managed",
+      "type": "azurerm_role_assignment",
+      "name": "redis_owner",
+      "provider_name": "registry.terraform.io/hashicorp/azurerm",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "scope": "/subscriptions/sub-id/resourceGroups/rg-banking-prod",
+          "role_definition_name": "Owner",
+          "principal_id": "user-id-456",
+          "principal_type": "User"
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

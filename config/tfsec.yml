@@ -1,0 +1,73 @@
+# TFSec Configuration for Bank's Security Standards
+# Detects security misconfigurations, hardcoded secrets, and policy violations
+
+# Severity levels: CRITICAL, HIGH, MEDIUM, LOW
+minimum_severity: LOW
+
+# Exclude specific checks if needed (empty by default - enforce all)
+exclude: []
+
+# Include custom checks
+include_passed: false
+include_ignored: false
+
+# Output format options
+format: json
+
+# Specific security policies enforced:
+
+# 1. Secret Detection
+# - Detects hardcoded AWS keys, passwords, tokens
+# - Flags sensitive data in plain text
+
+# 2. Encryption Enforcement
+# - S3 bucket encryption
+# - EBS volume encryption
+# - RDS encryption at rest
+# - SNS topic encryption
+# - SQS queue encryption
+
+# 3. Access Control
+# - Public S3 buckets
+# - Overly permissive security groups (0.0.0.0/0)
+# - IAM policies with wildcards
+# - Public RDS instances
+
+# 4. Network Security
+# - Security group ingress rules
+# - VPC flow logs enabled
+# - Network ACLs
+
+# 5. Logging & Monitoring
+# - CloudTrail enabled
+# - S3 access logging
+# - Load balancer access logs
+# - VPC flow logs
+
+# 6. Resource Configuration
+# - IMDSv2 enforcement on EC2
+# - Versioning on S3 buckets
+# - MFA delete on S3 buckets
+# - Backup policies
+
+# Custom check configurations
+custom_checks:
+  - id: BANK-001
+    description: "Ensure all resources have required Cost-Center tags"
+    severity: HIGH
+    
+  - id: BANK-002
+    description: "Detect hardcoded secrets or credentials"
+    severity: CRITICAL
+    
+  - id: BANK-003
+    description: "Ensure description fields are present on all variables and outputs"
+    severity: MEDIUM
+    
+  - id: BANK-004
+    description: "Enforce naming conventions per Platform Engineering Standards"
+    severity: MEDIUM
+    
+  - id: BANK-005
+    description: "Prevent use of deprecated Terraform patterns"
+    severity: LOW
